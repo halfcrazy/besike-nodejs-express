@@ -1,22 +1,28 @@
 var connect=require('connect');
-module.exports=function(port){
-    var p;
+var serve_static=require('serve-static');
+module.exports=function(path,port){
+    var Port;
     if(port){
-        p=port;
+        Port=port;
     }
     else{
-        p=4000;
+        Port=4000;
     }
-    console.log("Starting mini-harp on http://localhost:"+p);
+    var Path;
+    if(path){
+        Path=path;
+    }
+    else{
+        Path=process.cwd();
+    }
+    console.log("Starting mini-harp on http://localhost:"+Port);
     var app=connect();
     app.use(function(request,response,next) {
-                var url=request.url.split("/");
-                if(url[1]=="current-time"){
-                    response.write((new Date()).toISOString());
-                    response.end();
-                }
-                // console.log(url[1]);
-                next();
-            });
-    app.listen(p);
+            var url=request.url.split("/");
+            if(url[1]=="current-time"){
+            response.end((new Date()).toISOString());
+            }
+            next();
+            }).use(serve_static(Path));
+    app.listen(Port);
 };
