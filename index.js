@@ -1,6 +1,7 @@
 var connect = require('connect');
 var serve_static = require('serve-static');
 var makejade = require('./lib/processor/jade');
+var makeless = require('./lib/processor/less');
 module.exports = function(path) {
   var Path;
   if (path) {
@@ -14,5 +15,5 @@ module.exports = function(path) {
       response.end((new Date()).toISOString());
     }
     next();
-  }).use(serve_static(Path)).use(makejade(Path));
+  }).use(serve_static(Path)).use(makejade(Path)).use(makeless(Path));
 };
