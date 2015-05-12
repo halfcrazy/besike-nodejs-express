@@ -1,28 +1,18 @@
-var connect=require('connect');
-var serve_static=require('serve-static');
-module.exports=function(path,port){
-    var Port;
-    if(port){
-        Port=port;
+var connect = require('connect');
+var serve_static = require('serve-static');
+var makejade = require('./lib/processor/jade');
+module.exports = function(path) {
+  var Path;
+  if (path) {
+    Path = path;
+  } else {
+    Path = process.cwd();
+  }
+  return connect().use(function(request, response, next) {
+    var url = request.url.split("/");
+    if (url[1] == "current-time") {
+      response.end((new Date()).toISOString());
     }
-    else{
-        Port=4000;
-    }
-    var Path;
-    if(path){
-        Path=path;
-    }
-    else{
-        Path=process.cwd();
-    }
-    console.log("Starting mini-harp on http://localhost:"+Port);
-    var app=connect();
-    app.use(function(request,response,next) {
-            var url=request.url.split("/");
-            if(url[1]=="current-time"){
-            response.end((new Date()).toISOString());
-            }
-            next();
-            }).use(serve_static(Path));
-    app.listen(Port);
+    next();
+  }).use(serve_static(Path)).use(makejade(Path));
 };
